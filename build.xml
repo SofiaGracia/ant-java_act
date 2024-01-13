@@ -1,9 +1,12 @@
-<project name="AntJavaProject" default="main" basedir=".">
+<project name="AntJavaProject" default="main" basedir="."> 
 
+<!-- Descripció del projecte -->
 	<description>
-		Crear un projecte de Java amb Ant
+		Crear un projecte de Java amb Ant: Dona informació sobre la data.
 	</description>
 
+<!-- Propietats: Pots establir dreceres per a cadenes que s'utilitzen al llarg de l'archiu. 
+Però no són variables, el valor de la propietat romandrà durant tot el fitxer -->
 	<property name="projectName" value="Info" />
 
 	<!-- Java sources -->
@@ -15,44 +18,62 @@
 	<!-- Output, Jar -->
 	<property name="dist.dir" location="dist" />
 
+	<!-- Fitxer Manifest -->
+	<property name="main.class" value="org.cghr.Info" /> 
+	<property name="modificat" value="Sofia-Gracia" />
 
-
+<!-- Llista de targetes -->
 	<target name="init">
-		<!-- Create the time stamp -->
+		<!-- Crear la marca de temps -->
 		<tstamp />
-		<!-- Create the build directory structure used by compile -->
+		<!-- Crear la estructura de directoris build per a poder compilar -->
 		<mkdir dir="${build.dir}" />
 	</target>
 
-	<target name="compile" depends="init" description="compile the source ">
-		<!-- Compile the java code from ${src.dir} into ${build.dir} -->
+
+	<target name="compile" depends="init" description="compilar el codi font ">
+		<!-- Compilar el codi java de ${src.dir} a ${build.dir} -->
 		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" />
 	</target>
+	
 
 	<target name="dist" depends="compile" description="package, output to JAR">
 
-		<!-- Create the distribution directory -->
+		<!-- Crear el directori de la distribució -->
 		<mkdir dir="${dist.dir}" />
 
 		<!-- Put everything in ${build} into the {$projectName}-${DSTAMP}.jar file -->
 		<jar jarfile="${dist.dir}/${projectName}-${DSTAMP}.jar" basedir="${build.dir}" >
 		    <manifest>
 			<!-- create an executable Jar -->
-			<attribute name="Main-Class" value="org.cghr.Info" />
+			<attribute name="Main-Class" value="${main.class}" />
+			<attribute name="Modificat-per" value="${modificat}" />
 		    </manifest>
 		</jar>
 	</target>
+
+	<target name="zip-app" depends="dist" description="Crear un archiu ZIP amb la distribució">
+	    <zip destfile="${dist.dir}/${projectName}-app.zip" basedir="${dist.dir}" />
+	</target>
+
+	<target name="do-tar" description="Crear un archiu TAR amb la distribució">
+        	<tar destfile="${dist.dir}/${projectName}-app.tar" compression="gzip">
+            		<fileset dir="${dist.dir}" />
+        	</tar>
+    	</target>
 
 	<target name="run-jar" depends="dist" description="run the generated JAR file">
     		<java jar="${dist.dir}/${projectName}-${DSTAMP}.jar" fork="true" />
 	</target>
 
-	<target name="clean" description="clean up">
+
+	<target name="clean" description="clean up">	
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
 	</target>
 
 	<!-- Default, run this -->
-	<target name="main" depends="clean, compile, dist,run-jar" />
+	<target name="main" depends="clean, compile, dist, zip-app, do-tar, run-jar" />
 
 </project>
+
