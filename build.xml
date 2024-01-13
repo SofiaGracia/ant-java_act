@@ -1,7 +1,7 @@
 <project name="AntJavaProject" default="main" basedir=".">
 
 	<description>
-		Create a Java Project (JAR) with Ant build script
+		Crear un projecte de Java amb Ant
 	</description>
 
 	<property name="projectName" value="Info" />
@@ -43,12 +43,16 @@
 		</jar>
 	</target>
 
+	<target name="run-jar" depends="dist" description="run the generated JAR file">
+    		<java jar="${dist.dir}/${projectName}-${DSTAMP}.jar" fork="true" />
+	</target>
+
 	<target name="clean" description="clean up">
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
 	</target>
 
 	<!-- Default, run this -->
-	<target name="main" depends="clean, compile, dist" />
+	<target name="main" depends="clean, compile, dist,run-jar" />
 
 </project>
