@@ -21,15 +21,17 @@ Però no són variables, el valor de la propietat romandrà durant tot el fitxer
 	<!-- Fitxer Manifest -->
 	<property name="main.class" value="org.cghr.Info" /> 
 	<property name="modificat" value="Sofia-Gracia" />
+	
+	<!-- Fitxer prova amb touch -->
+	<property name="touch.file" value="${build.dir}/Data_del_Build.txt" />
 
 <!-- Llista de targetes -->
 	<target name="init">
-		<!-- Crear la marca de temps -->
+		<!-- Crear marca de temps -->
 		<tstamp />
 		<!-- Crear la estructura de directoris build per a poder compilar -->
 		<mkdir dir="${build.dir}" />
 	</target>
-
 
 	<target name="compile" depends="init" description="compilar el codi font ">
 		<!-- Compilar el codi java de ${src.dir} a ${build.dir} -->
@@ -38,41 +40,42 @@ Però no són variables, el valor de la propietat romandrà durant tot el fitxer
 	
 
 	<target name="dist" depends="compile" description="package, output to JAR">
-
 		<!-- Crear el directori de la distribució -->
 		<mkdir dir="${dist.dir}" />
 
-		<!-- Put everything in ${build} into the {$projectName}-${DSTAMP}.jar file -->
+		<!-- Possar el contingut de bin -> ${build} en un fitxer jar -> {$projectName}-${DSTAMP}.jar -->
 		<jar jarfile="${dist.dir}/${projectName}-${DSTAMP}.jar" basedir="${build.dir}" >
 		    <manifest>
-			<!-- create an executable Jar -->
+			<!-- crear Jar executable -->
 			<attribute name="Main-Class" value="${main.class}" />
+			<!-- Incluir en el fitxer META informació -->
 			<attribute name="Modificat-per" value="${modificat}" />
 		    </manifest>
 		</jar>
+		<!-- Crear un fitxer amb touch -->
+		<touch file="${touch.file}" />
 	</target>
-
+	
 	<target name="zip-app" depends="dist" description="Crear un archiu ZIP amb la distribució">
 	    <zip destfile="${dist.dir}/${projectName}-app.zip" basedir="${dist.dir}" />
 	</target>
-
+	
 	<target name="do-tar" description="Crear un archiu TAR amb la distribució">
         	<tar destfile="${dist.dir}/${projectName}-app.tar" compression="gzip">
             		<fileset dir="${dist.dir}" />
         	</tar>
     	</target>
-
-	<target name="run-jar" depends="dist" description="run the generated JAR file">
+	
+	<target name="run-jar" depends="dist" description="Executar l'archiu jar">
     		<java jar="${dist.dir}/${projectName}-${DSTAMP}.jar" fork="true" />
 	</target>
 
-
-	<target name="clean" description="clean up">	
+	<target name="clean" description="Borra el creat durant el build">	
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
 	</target>
 
-	<!-- Default, run this -->
+	<!-- Executar totes les accions -->
 	<target name="main" depends="clean, compile, dist, zip-app, do-tar, run-jar" />
 
 </project>
